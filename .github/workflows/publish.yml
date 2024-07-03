@@ -1,0 +1,130 @@
+name: Publish Bot App
+
+on:
+  page_build:
+  release:
+    types:
+      - created
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout GitHub Action
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Add Garage Group NuGet Source
+      run: >
+        dotnet nuget add source ${{ vars.GG_NUGET_SOURCE_URL }}
+        -n garage
+        -u ${{ secrets.GG_NUGET_SOURCE_USER_NAME }}
+        -p ${{ secrets.GG_NUGET_SOURCE_USER_PASSWORD }}
+        --store-password-in-clear-text
+
+    - name: Restore
+      run: dotnet restore
+
+    - name: Test
+      run: dotnet test --no-restore -c Release
+
+    - name: Publish AzureFunc
+      run: dotnet publish ./src/*/AzureFunc.csproj -c Release --output ./publish
+
+    - name: Get version
+      id: get_version
+      run: echo "version=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_OUTPUT
+
+    - name: Get current date time
+      id: date
+      run: echo "datetime=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
+
+    - name: App Settings Variable Substitution
+      uses: microsoft/variable-substitution@v1
+      with:
+        files: './publish/appsettings.json'
+      env:
+        Info.ApiVersion: '${{ steps.get_version.outputs.version }}'
+        Info.BuildDateTime: '${{ steps.date.outputs.datetime }}'
+
+    - name: Archive publish folder
+      run: |
+        cd ./publish
+        zip -r ${{ vars.AZURE_ARTIFACT_NAME }}-${{ steps.get_version.outputs.version }}.zip ./
+
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS_ARTIFACT }}
+
+    - name: Upload to Azure Blob Storage
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.30.0
+        inlineScript: |
+          az storage blob upload \
+            --container-name artifacts \
+            --file ./publish/${{ vars.AZURE_ARTIFACT_NAME }}-${{ steps.get_version.outputs.version }}.zip \
+            --account-name startifactblob \
+            --account-key ${{ secrets.AZURE_ACCOUNT_KEY_ARTIFACT }} \
+      env:
+        AZURE_STORAGE_ACCOUNT: startifactblob
+
+  deploy-to-test:
+    runs-on: ubuntu-latest
+    needs: publish
+
+    steps:
+    - name: Checkout GitHub Action
+      uses: actions/checkout@v4
+
+    - name: Get version
+      id: get_version
+      run: echo "version=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_OUTPUT
+
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS_ARTIFACT }}
+
+    - name: Ensure Publish Directory Exists
+      run: mkdir -p ./publish
+
+    - name: Download from Blob Storage
+      run: |
+        az storage blob download \
+          --name ${{ vars.AZURE_ARTIFACT_NAME }}-${{ steps.get_version.outputs.version }}.zip \
+          --file ./publish/${{ vars.AZURE_ARTIFACT_NAME }}-${{ steps.get_version.outputs.version }}.zip \
+          --account-name startifactblob \
+          --container-name artifacts \
+          --account-key ${{ secrets.AZURE_ACCOUNT_KEY_ARTIFACT }}
+
+    - name: Deploy to Azure
+      uses: Azure/functions-action@v1
+      with:
+        app-name: ${{ vars.TEST_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.TEST_BOTFUNC_PUBLISHPROFILE }}
+        package: ./publish/${{ vars.AZURE_ARTIFACT_NAME }}-${{ steps.get_version.outputs.version }}.zip
+
+    - name: Log out of Azure
+      run: az logout
+
+  ping-test:
+    runs-on: ubuntu-latest
+    needs: deploy-to-test
+
+    steps:
+      - name: Get version
+        id: get_version
+        run: echo "version=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_OUTPUT
+
+      - name: Ping Health Check URL
+        uses: GarageGroup/platform-ping-app@v0.0.3
+        with:
+          health_check_url: https://${{ vars.TEST_WEBAPP_NAME }}.azurewebsites.net/health?code=${{ secrets.TEST_BOTFUNC_KEY }}
+          contains: ${{ steps.get_version.outputs.version }}
+          retry_delay_in_seconds: 15
+          max_attempts: 10
