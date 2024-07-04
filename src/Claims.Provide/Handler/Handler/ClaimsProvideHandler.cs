@@ -6,6 +6,8 @@ namespace GarageGroup.Internal.Dataverse.Claims;
 
 internal sealed partial class ClaimsProvideHandler : IClaimsProvideHandler
 {
+    private const string TableName = "DataverseUsers";
+
     private const string SelectedField = "DataverseUserId";
 
     private const string ApiVersion = "2019-02-02";

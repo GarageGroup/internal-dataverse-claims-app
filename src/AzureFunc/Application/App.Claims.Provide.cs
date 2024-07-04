@@ -24,7 +24,6 @@ partial class Application
         
         return new(
             accountName: section["AccountName"].OrEmpty(),
-            accountKey: section["AccountKey"].OrEmpty(),
-            tableName: section["TableName"].OrEmpty());
+            accountKey: section["AccountKey"].OrEmpty());
     }
 }
