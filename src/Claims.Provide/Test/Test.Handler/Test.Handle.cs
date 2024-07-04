@@ -10,7 +10,7 @@ namespace GarageGroup.Internal.Dataverse.Claims.Provide.Test;
 partial class ClaimsProvideHandlerTest
 {
     [Fact]
-    internal static async Task HandleAsync_InputIsInvalid_ExpectValidationFailure()
+    public static async Task HandleAsync_InputIsInvalid_ExpectValidationFailure()
     {
         var mockHttpApi = BuildMockHttpApi(SomeHttpOutput);
         var mockDateProvider = BuildDateProvider(SomeDate);
@@ -22,6 +22,7 @@ partial class ClaimsProvideHandlerTest
         {
             Data = new AuthenticationEventData()
         };
+
         var actual = await handler.HandleAsync(input, cancellationToken);
         var expected = Failure.Create(HandlerFailureCode.Persistent, "The Azure Active Directory user is not specified");
 
@@ -29,7 +30,7 @@ partial class ClaimsProvideHandlerTest
     }
 
     [Fact]
-    internal static async Task HandleAsync_InputIsValid_ExpectHttpApiSendCalledOnce()
+    public static async Task HandleAsync_InputIsValid_ExpectHttpApiSendCalledOnce()
     {
         var httpOut = new HttpSendOut()
         {
@@ -39,6 +40,7 @@ partial class ClaimsProvideHandlerTest
                 Id = new("5b75dbfc-8a4b-40bf-babc-503dd533ae04")
             }),
         };
+
         var mockHttpApi = BuildMockHttpApi(httpOut);
 
         var date = new DateTime(2024, 7, 3, 14, 41, 12);
@@ -48,6 +50,7 @@ partial class ClaimsProvideHandlerTest
             accountName: "AccountName",
             accountKey: "c29tZSBhY2NvdW50IGtleQ==",
             tableName: "TableName");
+
         var handler = new ClaimsProvideHandler(mockHttpApi.Object, option, mockDateProvider);
         
         var cancellationToken = new CancellationToken(false);
@@ -65,6 +68,7 @@ partial class ClaimsProvideHandlerTest
                 }
             }
         };
+
         _ = await handler.HandleAsync(input, cancellationToken);
 
         var expectedInput = new HttpSendIn(
@@ -87,7 +91,7 @@ partial class ClaimsProvideHandlerTest
     [Theory]
     [MemberData(nameof(ClaimsProvideHandlerTestSource.OutputFailureTestData), MemberType = typeof(ClaimsProvideHandlerTestSource))]
     public static async Task HandleAsync_HttpApiSendResultIsFailure_ExpectedFailure(
-        HttpSendFailure httpSendFailure, Failure<HandlerFailureCode> failureExpected)
+        HttpSendFailure httpSendFailure, Failure<HandlerFailureCode> expected)
     {
         var mockHttpApi = BuildMockHttpApi(httpSendFailure);
         var mockDateProvider = BuildDateProvider(SomeDate);
@@ -97,13 +101,13 @@ partial class ClaimsProvideHandlerTest
 
         var actual = await handler.HandleAsync(SomeInput, cancellationToken);
 
-        Assert.Equal(failureExpected, actual);
+        Assert.Equal(expected, actual);
     }
 
     [Fact]
-    internal static async Task HandleAsync_HttpApiSendResultIsSuccess_ExpectedSuccess()
+    public static async Task HandleAsync_HttpApiSendResultIsSuccess_ExpectedSuccess()
     {
-        var httpOut = new HttpSendOut()
+        var httpOut = new HttpSendOut
         {
             StatusCode = HttpSuccessCode.OK,
             Body = HttpBody.SerializeAsJson(new StubSystemUserId()
@@ -111,6 +115,7 @@ partial class ClaimsProvideHandlerTest
                 Id = new("5b75dbfc-8a4b-40bf-babc-503dd533ae04")
             }),
         };
+
         var mockHttpApi = BuildMockHttpApi(httpOut);
         var mockDateProvider = BuildDateProvider(SomeDate);
 
@@ -131,19 +136,21 @@ partial class ClaimsProvideHandlerTest
                 }
             }
         };
+
         var actual = await handler.HandleAsync(input, cancellationToken);
 
-        var expected = new ClaimsProvideOut(new()
-        {
-            Actions =
-            [
-                new(
+        var expected = new ClaimsProvideOut(
+            data: new()
+            {
+                Actions =
+                [
                     new(
-                        correlationId: new("fd0b6a08-b75e-4378-9bf7-6c14f7aa4f27"),
-                        systemUserId: new("5b75dbfc-8a4b-40bf-babc-503dd533ae04")))
-            ]
-        });
+                        claims: new(
+                            correlationId: new("fd0b6a08-b75e-4378-9bf7-6c14f7aa4f27"),
+                            systemUserId: new("5b75dbfc-8a4b-40bf-babc-503dd533ae04")))
+                ]
+            });
 
-        Assert.Equal(expected, actual);
+        Assert.StrictEqual(expected, actual);
     }
 }
