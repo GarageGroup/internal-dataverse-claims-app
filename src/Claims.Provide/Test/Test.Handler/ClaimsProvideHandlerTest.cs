@@ -16,18 +16,18 @@ public static partial class ClaimsProvideHandlerTest
         new()
         {
             StatusCode = HttpSuccessCode.OK,
-            Body = HttpBody.SerializeAsJson(new StubSystemUserId()
-            {
-                Id = new("4934c84c-f0cf-447c-bee9-2bc0112fb968")
-            }),
+            Body = HttpBody.SerializeAsJson(
+                value: new InnerSystemUserId
+                {
+                    DataverseUserId = new("4934c84c-f0cf-447c-bee9-2bc0112fb968")
+                }),
         };
 
     private static readonly ClaimsProvideOption SomeOption
         =
         new(
             accountName: "SomeAccountName",
-            accountKey: "c29tZSBhY2NvdW50IGtleQ==",
-            tableName: "SomeTableName");
+            accountKey: "c29tZSBhY2NvdW50IGtleQ==");
 
     private static readonly ClaimsProvideIn SomeInput
         =
@@ -59,4 +59,9 @@ public static partial class ClaimsProvideHandlerTest
     private static IDateProvider BuildDateProvider(DateTime date)
         =>
         Mock.Of<IDateProvider>(t => t.Date == date);
+
+    internal sealed record class InnerSystemUserId
+    {
+        public Guid DataverseUserId { get; init; }
+    }
 }

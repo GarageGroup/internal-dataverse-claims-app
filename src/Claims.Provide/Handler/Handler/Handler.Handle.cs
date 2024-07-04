@@ -47,7 +47,7 @@ partial class ClaimsProvideHandler
     private HttpSendIn BuildHttpSendIn(Guid userId)
     {
         var date = dateProvider.Date.ToString("R");
-        var stringToSign = $"{date}\n/{option.AccountName}/{option.TableName}(PartitionKey='{userId}',RowKey='{userId}')";
+        var stringToSign = $"{date}\n/{option.AccountName}/{TableName}(PartitionKey='{userId}',RowKey='{userId}')";
 
         using var hashAlgorithm = new HMACSHA256(Convert.FromBase64String(option.AccountKey));
         var hash = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(stringToSign));
@@ -56,7 +56,7 @@ partial class ClaimsProvideHandler
         return new(
             method: HttpVerb.Get,
             requestUri: $"https://{option.AccountName}.table.cosmos.azure.com/" +
-                $"{option.TableName}(PartitionKey='{userId}',RowKey='{userId}')?$select={SelectedField}")
+                $"{TableName}(PartitionKey='{userId}',RowKey='{userId}')?$select={SelectedField}")
         {
             Headers =
             [

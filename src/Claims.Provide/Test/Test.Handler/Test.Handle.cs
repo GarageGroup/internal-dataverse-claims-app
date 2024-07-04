@@ -18,9 +18,9 @@ partial class ClaimsProvideHandlerTest
         var handler = new ClaimsProvideHandler(mockHttpApi.Object, SomeOption, mockDateProvider);
         var cancellationToken = new CancellationToken(false);
 
-        var input = new ClaimsProvideIn()
+        var input = new ClaimsProvideIn
         {
-            Data = new AuthenticationEventData()
+            Data = new()
         };
 
         var actual = await handler.HandleAsync(input, cancellationToken);
@@ -35,10 +35,11 @@ partial class ClaimsProvideHandlerTest
         var httpOut = new HttpSendOut()
         {
             StatusCode = HttpSuccessCode.OK,
-            Body = HttpBody.SerializeAsJson(new StubSystemUserId()
-            {
-                Id = new("5b75dbfc-8a4b-40bf-babc-503dd533ae04")
-            }),
+            Body = HttpBody.SerializeAsJson(
+                value: new InnerSystemUserId
+                {
+                    DataverseUserId = new("5b75dbfc-8a4b-40bf-babc-503dd533ae04")
+                })
         };
 
         var mockHttpApi = BuildMockHttpApi(httpOut);
@@ -48,8 +49,7 @@ partial class ClaimsProvideHandlerTest
 
         var option = new ClaimsProvideOption(
             accountName: "AccountName",
-            accountKey: "c29tZSBhY2NvdW50IGtleQ==",
-            tableName: "TableName");
+            accountKey: "c29tZSBhY2NvdW50IGtleQ==");
 
         var handler = new ClaimsProvideHandler(mockHttpApi.Object, option, mockDateProvider);
         
@@ -73,12 +73,12 @@ partial class ClaimsProvideHandlerTest
 
         var expectedInput = new HttpSendIn(
             method: HttpVerb.Get,
-            requestUri: "https://AccountName.table.cosmos.azure.com/TableName" +
+            requestUri: "https://AccountName.table.cosmos.azure.com/DataverseUsers" +
                 "(PartitionKey='b76e756f-7f6e-4df0-b470-8f0c0a04d18c',RowKey='b76e756f-7f6e-4df0-b470-8f0c0a04d18c')?$select=DataverseUserId")
         {
             Headers =
             [
-                new("authorization", "SharedKeyLite AccountName:swqm+2RmbxIUk8EbtZAsWyMGANQKUjdY9uPJZUaZaM4="),
+                new("authorization", "SharedKeyLite AccountName:uOIQZAiwwjm0b4GsDZBV0kxDGbliMMNIz8pJFoXS5K4="),
                 new("x-ms-date", "Wed, 03 Jul 2024 14:41:12 GMT"),
                 new("x-ms-version", "2019-02-02"),
                 new("accept", "application/json;odata=nometadata")
@@ -110,10 +110,11 @@ partial class ClaimsProvideHandlerTest
         var httpOut = new HttpSendOut
         {
             StatusCode = HttpSuccessCode.OK,
-            Body = HttpBody.SerializeAsJson(new StubSystemUserId()
-            {
-                Id = new("5b75dbfc-8a4b-40bf-babc-503dd533ae04")
-            }),
+            Body = HttpBody.SerializeAsJson(
+                value: new InnerSystemUserId
+                {
+                    DataverseUserId = new("5b75dbfc-8a4b-40bf-babc-503dd533ae04")
+                }),
         };
 
         var mockHttpApi = BuildMockHttpApi(httpOut);
