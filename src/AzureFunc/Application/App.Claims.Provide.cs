@@ -23,8 +23,8 @@ partial class Application
         var section = serviceProvider.GetRequiredService<IConfiguration>().GetRequiredSection("CosmosDb");
         
         return new(
-            accountName: section["AccountName"],
-            accountKey: section["AccountKey"],
-            tableName: section["TableName"]);
+            accountName: section["AccountName"].OrEmpty(),
+            accountKey: section["AccountKey"].OrEmpty(),
+            tableName: section["TableName"].OrEmpty());
     }
 }
