@@ -21,6 +21,10 @@ partial class Application
     private static ClaimsProvideOption ResolveClaimsProvideOption(IServiceProvider serviceProvider)
     {
         var section = serviceProvider.GetRequiredService<IConfiguration>().GetRequiredSection("CosmosDb");
-        throw new NotImplementedException();
+        
+        return new(
+            accountName: section["AccountName"].OrEmpty(),
+            accountKey: section["AccountKey"].OrEmpty(),
+            tableName: section["TableName"].OrEmpty());
     }
 }
