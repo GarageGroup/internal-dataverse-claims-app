@@ -4,6 +4,7 @@ using GarageGroup.Infra;
 using PrimeFuncPack;
 
 [assembly: InternalsVisibleTo("GarageGroup.Internal.Dataverse.Claims.Provide.Test")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 
 namespace GarageGroup.Internal.Dataverse.Claims;
 
@@ -20,7 +21,7 @@ public static class ClaimsProvideDependency
             ArgumentNullException.ThrowIfNull(httpApi);
             ArgumentNullException.ThrowIfNull(option);
 
-            return new(httpApi, option);
+            return new(httpApi, option, DateProvider.Instance);
         }
     }
 }

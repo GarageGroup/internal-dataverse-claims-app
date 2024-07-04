@@ -26,7 +26,7 @@
     <PackageReference Include="GarageGroup.Infra.Azure.Handler" Version="0.15.0" />
     <PackageReference Include="GarageGroup.Infra.Azure.Hosting" Version="0.11.0" />
     <PackageReference Include="GarageGroup.Infra.HealthCheck.Handler" Version="0.3.0" />
-    <PackageReference Include="GarageGroup.Infra.Http.Api" Version="0.2.0" />
+    <PackageReference Include="GarageGroup.Infra.Http.Api" Version="0.2.1" />
     <PackageReference Include="GarageGroup.Infra.Http.Polly" Version="2.0.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.2.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.17.2" OutputItemType="Analyzer" />
