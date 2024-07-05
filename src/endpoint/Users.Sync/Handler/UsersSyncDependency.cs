@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using PrimeFuncPack;
+
+[assembly: InternalsVisibleTo("GarageGroup.Internal.Dataverse.Claims.Endpoint.Users.Sync.Test")]
 
 namespace GarageGroup.Internal.Dataverse.Claims;
 
