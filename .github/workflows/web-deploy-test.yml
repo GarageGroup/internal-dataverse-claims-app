@@ -1,4 +1,4 @@
-name: Deploy Bot App to Test
+name: Deploy Web App on Test
 
 on:
   workflow_dispatch:

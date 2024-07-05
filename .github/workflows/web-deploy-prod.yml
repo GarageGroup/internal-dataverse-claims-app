@@ -1,4 +1,4 @@
-name: Deploy Bot App to Prod
+name: Deploy Web App on Prod
 
 on:
   workflow_dispatch:
