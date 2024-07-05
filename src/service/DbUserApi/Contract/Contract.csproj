@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <NoWarn>$(NoWarn);IDE0130</NoWarn>
+    <RootNamespace>GarageGroup.Internal.Dataverse.Claims</RootNamespace>
+    <AssemblyName>GarageGroup.Internal.Dataverse.Claims.Service.DbUserApi.Contract</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PrimeFuncPack.Core.Failure" Version="2.2.0" />
+    <PackageReference Include="PrimeFuncPack.Core.FlatArray" Version="1.4.0" />
+    <PackageReference Include="PrimeFuncPack.Core.Result" Version="2.0.2" />
+  </ItemGroup>
+
+</Project>
