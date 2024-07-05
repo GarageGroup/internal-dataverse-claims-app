@@ -8,9 +8,9 @@ namespace GarageGroup.Internal.Dataverse.Claims;
 
 internal static partial class Application
 {
-    private static Dependency<ISqlApi> UseDataverseSqlApi()
+    private static Dependency<ICrmUserApi> UseCrmUserApi()
         =>
-        DataverseDbProvider.Configure("Dataverse").UseSqlApi();
+        UseDataverseSqlApi().UseCrmUserApi();
 
     private static Dependency<IDbUserApi> UseDbUserApi()
         =>
@@ -20,6 +20,10 @@ internal static partial class Application
         .UseHttpApi()
         .With(ResolveCosmosDbUserApiOption)
         .UseCosmosDbUserApi();
+
+    private static Dependency<ISqlApi> UseDataverseSqlApi()
+        =>
+        DataverseDbProvider.Configure("Dataverse").UseSqlApi();
 
     private static CosmosDbUserApiOption ResolveCosmosDbUserApiOption(IServiceProvider serviceProvider)
     {

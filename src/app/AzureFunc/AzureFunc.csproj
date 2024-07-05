@@ -22,6 +22,7 @@
     <ProjectReference Include="..\..\service\CrmUserApi\Api\Api.csproj" />
     <ProjectReference Include="..\..\service\DbUserApi\Api\Api.csproj" />
     <ProjectReference Include="..\..\endpoint\Claims.Provide\Handler\Handler.csproj" />
+    <ProjectReference Include="..\..\endpoint\Users.Sync\Handler\Handler.csproj" />
   </ItemGroup>
 
   <ItemGroup>

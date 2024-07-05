@@ -8,13 +8,11 @@
     <InvariantGlobalization>false</InvariantGlobalization>
     <NoWarn>$(NoWarn);IDE0130</NoWarn>
     <RootNamespace>GarageGroup.Internal.Dataverse.Claims</RootNamespace>
-    <AssemblyName>GarageGroup.Internal.Dataverse.Claims.Service.CrmUserApi.Contract</AssemblyName>
+    <AssemblyName>GarageGroup.Internal.Dataverse.Claims.Endpoint.Users.Sync.Contract</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="PrimeFuncPack.Core.Failure" Version="2.2.0" />
-    <PackageReference Include="PrimeFuncPack.Core.FlatArray" Version="1.4.0" />
-    <PackageReference Include="PrimeFuncPack.Core.Result" Version="2.0.2" />
+    <PackageReference Include="GarageGroup.Infra.Handler.Core" Version="0.6.0" />
   </ItemGroup>
 
 </Project>
