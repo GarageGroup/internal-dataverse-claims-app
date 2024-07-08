@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using GarageGroup.Infra;
@@ -15,7 +13,7 @@ partial class CosmosDbUserApi
         AsyncPipeline.Pipe(
             input.AzureUserId, cancellationToken)
         .Pipe(
-            BuildHttpSendIn)
+            BuildHttpSendGetIn)
         .PipeValue(
             httpApi.SendAsync)
         .Map(
@@ -23,14 +21,12 @@ partial class CosmosDbUserApi
                 dataverseUserId: success.Body.DeserializeFromJson<DataverseUserIdJson>().Id),
             static failure => failure.ToStandardFailure().MapFailureCode(MapFailureCode));
 
-    private HttpSendIn BuildHttpSendIn(Guid userId)
+    private HttpSendIn BuildHttpSendGetIn(Guid userId)
     {
         var date = dateProvider.Date.ToString("R");
         var stringToSign = $"{date}\n/{option.AccountName}/{TableName}(PartitionKey='{userId}',RowKey='{userId}')";
 
-        using var hashAlgorithm = new HMACSHA256(Convert.FromBase64String(option.AccountKey));
-        var hash = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(stringToSign));
-        var signature = Convert.ToBase64String(hash);
+        var signature = BuildSignature(stringToSign);
 
         return new(
             method: HttpVerb.Get,

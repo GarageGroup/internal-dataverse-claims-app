@@ -12,17 +12,7 @@ partial class CosmosDbUserApiTest
     [Fact]
     public static async Task GetUserAsync_ExpectHttpApiSendCalledOnce()
     {
-        var httpOut = new HttpSendOut
-        {
-            StatusCode = HttpSuccessCode.OK,
-            Body = HttpBody.SerializeAsJson(
-                value: new InnerDataverseUserId
-                {
-                    DataverseUserId = new("5b75dbfc-8a4b-40bf-babc-503dd533ae04")
-                })
-        };
-
-        var mockHttpApi = BuildMockHttpApi(httpOut);
+        var mockHttpApi = BuildMockHttpApi(SomeHttpOutput);
 
         var date = new DateTime(2024, 7, 3, 14, 41, 12);
         var mockDateProvider = BuildDateProvider(date);
