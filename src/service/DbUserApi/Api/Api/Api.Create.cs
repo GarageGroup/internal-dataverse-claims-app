@@ -25,19 +25,11 @@ partial class CosmosDbUserApi
         var date = dateProvider.Date.ToString("R");
         var stringToSign = $"{date}\n/{option.AccountName}/{TableName}";
 
-        var signature = BuildSignature(stringToSign);
-
         return new(
             method: HttpVerb.Post,
             requestUri: $"https://{option.AccountName}.table.cosmos.azure.com/{TableName}")
         {
-            Headers =
-            [
-                new("Authorization", $"SharedKeyLite {option.AccountName}:{signature}"),
-                new("x-ms-date", date),
-                new("x-ms-version", ApiVersion),
-                new("Accept", AcceptHeader)
-            ],
+            Headers = BuildHeaders(date, stringToSign),
             Body = HttpBody.SerializeAsJson(new DbUserCreateJson()
             {
                 DataverseUserId = input.DataverseUserId,

@@ -26,20 +26,12 @@ partial class CosmosDbUserApi
         var date = dateProvider.Date.ToString("R");
         var stringToSign = $"{date}\n/{option.AccountName}/{TableName}(PartitionKey='{userId}',RowKey='{userId}')";
 
-        var signature = BuildSignature(stringToSign);
-
         return new(
             method: HttpVerb.Get,
             requestUri: $"https://{option.AccountName}.table.cosmos.azure.com/" +
                 $"{TableName}(PartitionKey='{userId}',RowKey='{userId}')?$select={SelectedField}")
         {
-            Headers =
-            [
-                new("Authorization", $"SharedKeyLite {option.AccountName}:{signature}"),
-                new("x-ms-date", date),
-                new("x-ms-version", ApiVersion),
-                new("Accept", AcceptHeader)
-            ]
+            Headers = BuildHeaders(date, stringToSign)
         };
     }
 

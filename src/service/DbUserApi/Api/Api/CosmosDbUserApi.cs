@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Serialization;
 using GarageGroup.Infra;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GarageGroup.Internal.Dataverse.Claims;
 
@@ -20,12 +22,18 @@ internal sealed partial class CosmosDbUserApi(IHttpApi httpApi, CosmosDbUserApiO
 
     private const string AcceptHeader = "application/json;odata=nometadata";
 
-    private string BuildSignature(string stringToSign)
+    private FlatArray<KeyValuePair<string, string>> BuildHeaders(string date, string stringToSign)
     {
         using var hashAlgorithm = new HMACSHA256(Convert.FromBase64String(option.AccountKey));
         var hash = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(stringToSign));
-        
-        return Convert.ToBase64String(hash);
+
+        return 
+        [
+            new("Authorization", $"SharedKeyLite {option.AccountName}:{Convert.ToBase64String(hash)}"),
+            new("x-ms-date", date),
+            new("x-ms-version", ApiVersion),
+            new("Accept", AcceptHeader)
+        ];
     }
 
     private readonly record struct DataverseUserIdJson
@@ -34,7 +42,7 @@ internal sealed partial class CosmosDbUserApi(IHttpApi httpApi, CosmosDbUserApiO
         public Guid Id { get; init; }
     }
 
-    private readonly record struct DbUserSetJson
+    private readonly record struct DbUserSetJsonOut
     {
         [JsonPropertyName("value")]
         public FlatArray<DbUserJson> Value { get; init; }
