@@ -73,8 +73,10 @@ partial class CosmosDbUserApiTest
         var mockDateProvider = BuildDateProvider(SomeDate);
 
         var api = new CosmosDbUserApi(mockHttpApi.Object, SomeOption, mockDateProvider);
-        var actual = await api.DeleteUserAsync(SomeDeleteInput, default);
 
-        Assert.StrictEqual(Result.Success<Unit>(default), actual);
+        var actual = await api.DeleteUserAsync(SomeDeleteInput, default);
+        var expected = Result.Success<Unit>(default);
+
+        Assert.StrictEqual(expected, actual);
     }
 }
