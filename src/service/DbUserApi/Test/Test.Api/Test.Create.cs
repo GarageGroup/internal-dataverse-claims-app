@@ -62,9 +62,7 @@ partial class CosmosDbUserApiTest
         var mockDateProvider = BuildDateProvider(SomeDate);
 
         var api = new CosmosDbUserApi(mockHttpApi.Object, SomeOption, mockDateProvider);
-        var cancellationToken = new CancellationToken(false);
-
-        var actual = await api.CreateUserAsync(SomeCreateInput, cancellationToken);
+        var actual = await api.CreateUserAsync(SomeCreateInput, default);
 
         Assert.Equal(expected, actual);
     }
@@ -74,16 +72,14 @@ partial class CosmosDbUserApiTest
     {
         var httpOut = new HttpSendOut
         {
-            StatusCode = HttpSuccessCode.Created,
+            StatusCode = HttpSuccessCode.Created
         };
 
         var mockHttpApi = BuildMockHttpApi(httpOut);
         var mockDateProvider = BuildDateProvider(SomeDate);
 
         var api = new CosmosDbUserApi(mockHttpApi.Object, SomeOption, mockDateProvider);
-        var cancellationToken = new CancellationToken(false);
-
-        var actual = await api.CreateUserAsync(SomeCreateInput, cancellationToken);
+        var actual = await api.CreateUserAsync(SomeCreateInput, default);
 
         Assert.StrictEqual(Result.Success<Unit>(default), actual);
     }
