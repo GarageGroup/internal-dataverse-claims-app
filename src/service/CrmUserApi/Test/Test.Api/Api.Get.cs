@@ -23,7 +23,8 @@ partial class CrmUserApiTest
             SelectedFields = new(
                 "u.systemuserid AS DataverseUserId",
                 "u.azureactivedirectoryobjectid AS AzureUserId"),
-            Filter = new DbRawFilter("u.title IS NOT NULL AND u.isdisabled = 0 AND u.azureactivedirectoryobjectid IS NOT NULL")
+            Filter = new DbRawFilter(
+                "u.title IS NOT NULL AND u.isdisabled = 0 AND u.azureactivedirectoryobjectid IS NOT NULL")
         };
         mockSql.Verify(a => a.QueryEntitySetOrFailureAsync<DbUser>(expectedInput, cancellationToken), Times.Once);
     }
@@ -38,15 +39,15 @@ partial class CrmUserApiTest
         var api = new Claims.CrmUserApi(mockSqlApi.Object);
 
         var actual = await api.GetUsersAsync(default, default);
-        var expected = Failure.Create(default(Unit), "Some Failure message", sourceException);
+        var expected = Failure.Create("Some Failure message", sourceException);
 
         Assert.StrictEqual(expected, actual);
     }
 
     [Fact]
-    public static async Task GetUsersAsync_DbResultIsSuccess_ExpectSeccess()
+    public static async Task GetUsersAsync_DbResultIsSuccess_ExpectSuccess()
     {
-        FlatArray<DbUser> dbOut =
+        FlatArray<DbUser> dbUsers =
         [
             new()
             {
@@ -60,7 +61,7 @@ partial class CrmUserApiTest
             }
         ];
 
-        var mockSql = BuildMockSqlApi(dbOut);
+        var mockSql = BuildMockSqlApi(dbUsers);
         var api = new Claims.CrmUserApi(mockSql.Object);
 
         var actual = await api.GetUsersAsync(default, default);
