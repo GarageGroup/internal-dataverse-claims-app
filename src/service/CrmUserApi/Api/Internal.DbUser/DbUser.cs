@@ -3,7 +3,7 @@
 namespace GarageGroup.Internal.Dataverse.Claims;
 
 [DbEntity("systemuser", AliasName)]
-public sealed partial record class DbUser : IDbEntity<DbUser>
+internal sealed partial record class DbUser : IDbEntity<DbUser>
 {
     private const string All = "QueryAll";
 
