@@ -40,7 +40,8 @@ partial class CosmosDbUserApiTest
                 new("x-ms-date", "Wed, 03 Jul 2024 14:41:12 GMT"),
                 new("x-ms-version", "2019-02-02"),
                 new("accept", "application/json;odata=nometadata")
-            ]
+            ],
+            SuccessType = HttpSuccessType.OnlyStatusCode
         };
 
         mockHttpApi.Verify(x => x.SendAsync(expectedInput, cancellationToken), Times.Once);

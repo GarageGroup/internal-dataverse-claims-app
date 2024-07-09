@@ -6,6 +6,11 @@ internal sealed partial class CrmUserApi : ICrmUserApi
 {
     private readonly ISqlQueryEntitySetSupplier sqlApi;
 
+    private static readonly DbSelectQuery DbRequest = DbUser.QueryAll with
+    {
+        Filter = DbUser.DefaultFilter
+    };
+
     internal CrmUserApi(ISqlQueryEntitySetSupplier sqlApi)
         =>
         this.sqlApi = sqlApi;

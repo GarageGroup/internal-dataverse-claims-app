@@ -23,15 +23,7 @@ partial class CrmUserApiTest
             SelectedFields = new(
                 "u.systemuserid AS DataverseUserId",
                 "u.azureactivedirectoryobjectid AS AzureUserId"),
-            Filter = new DbCombinedFilter(DbLogicalOperator.And)
-            {
-                Filters =
-                [
-                    new DbRawFilter("u.title is not null"),
-                    new DbParameterFilter("u.isdisabled", DbFilterOperator.Equal, 0, "isDisabled"),
-                    new DbRawFilter("u.azureactivedirectoryobjectid is not null"),
-                ]
-            }
+            Filter = new DbRawFilter("u.title IS NOT NULL AND u.isdisabled = 0 AND u.azureactivedirectoryobjectid IS NOT NULL")
         };
         mockSql.Verify(a => a.QueryEntitySetOrFailureAsync<DbUser>(expectedInput, cancellationToken), Times.Once);
     }
@@ -52,7 +44,7 @@ partial class CrmUserApiTest
     }
 
     [Fact]
-    public static async Task GetUsersAsync_DbResultIsSuccess_ExpectSecces()
+    public static async Task GetUsersAsync_DbResultIsSuccess_ExpectSeccess()
     {
         FlatArray<DbUser> dbOut =
         [

@@ -4,15 +4,9 @@ namespace GarageGroup.Internal.Dataverse.Claims;
 
 partial record class DbUser
 {
-    internal static DbCombinedFilter BuildDefaultFilter()
-        =>
-        new(DbLogicalOperator.And)
-        {
-            Filters =
-            [
-                new DbRawFilter($"{AliasName}.title is not null"),
-                new DbParameterFilter($"{AliasName}.isdisabled", DbFilterOperator.Equal, 0, "isDisabled"),
-                new DbRawFilter($"{AliasName}.azureactivedirectoryobjectid is not null"),
-            ]
-        };
+    internal readonly static DbRawFilter DefaultFilter
+        =
+        new($"{AliasName}.title IS NOT NULL " +
+            $"AND {AliasName}.isdisabled = 0 " +
+            $"AND {AliasName}.azureactivedirectoryobjectid IS NOT NULL");
 }

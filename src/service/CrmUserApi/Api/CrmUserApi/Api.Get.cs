@@ -10,12 +10,7 @@ partial class CrmUserApi
         Unit input, CancellationToken cancellationToken)
         =>
         AsyncPipeline.Pipe(
-            input, cancellationToken)
-        .Pipe(
-            _ => DbUser.QueryAll with
-            {
-                Filter = DbUser.BuildDefaultFilter()
-            })
+            DbRequest, cancellationToken)
         .PipeValue(
             sqlApi.QueryEntitySetOrFailureAsync<DbUser>)
         .MapSuccess(

@@ -17,7 +17,7 @@ partial class CosmosDbUserApi
         .PipeValue(
             httpApi.SendAsync)
         .Map(
-            _ => default(Unit),
+            Unit.From,
             static failure => failure.ToStandardFailure().WithFailureCode(default(Unit)));
 
     private HttpSendIn BuildHttpSendCreateIn(DbUserCreateIn input)
@@ -35,7 +35,8 @@ partial class CosmosDbUserApi
                 DataverseUserId = input.DataverseUserId,
                 PartitionKey = input.AzureUserId,
                 RowKey = input.AzureUserId,
-            })
+            }),
+            SuccessType = HttpSuccessType.OnlyStatusCode
         };
     }
 }

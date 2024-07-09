@@ -46,7 +46,8 @@ partial class CosmosDbUserApiTest
                 DataverseUserId = new("d0bb0ec9-6fe4-41c6-afc7-78892a24fbce"),
                 RowKey = new("b76e756f-7f6e-4df0-b470-8f0c0a04d18c"),
                 PartitionKey = new("b76e756f-7f6e-4df0-b470-8f0c0a04d18c")
-            })
+            }),
+            SuccessType = HttpSuccessType.OnlyStatusCode
         };
 
         mockHttpApi.Verify(x => x.SendAsync(expectedInput, cancellationToken), Times.Once);

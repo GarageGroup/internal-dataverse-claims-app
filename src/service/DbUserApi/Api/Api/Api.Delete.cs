@@ -17,7 +17,7 @@ partial class CosmosDbUserApi
         .PipeValue(
             httpApi.SendAsync)
         .Map(
-            _ => default(Unit),
+            Unit.From,
             static failure => failure.ToStandardFailure().WithFailureCode(default(Unit)));
 
     private HttpSendIn BuildHttpSendDeleteIn(Guid userId)
@@ -30,7 +30,8 @@ partial class CosmosDbUserApi
             requestUri: $"https://{option.AccountName}.table.cosmos.azure.com/" +
                 $"{TableName}(PartitionKey='{userId}',RowKey='{userId}')")
         {
-            Headers = BuildHeaders(date, stringToSign)
+            Headers = BuildHeaders(date, stringToSign),
+            SuccessType = HttpSuccessType.OnlyStatusCode
         };
     }
 }
