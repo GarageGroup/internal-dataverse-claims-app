@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using GarageGroup.Infra;
 using PrimeFuncPack;
+
+[assembly: InternalsVisibleTo("GarageGroup.Internal.Dataverse.Claims.Service.CrmUserApi.Test")]
 
 namespace GarageGroup.Internal.Dataverse.Claims;
 

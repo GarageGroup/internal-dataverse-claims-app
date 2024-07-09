@@ -2,11 +2,12 @@
 
 namespace GarageGroup.Internal.Dataverse.Claims;
 
-internal sealed partial class CrmUserApi : ICrmUserApi
+internal sealed partial class CrmUserApi(ISqlQueryEntitySetSupplier sqlApi) : ICrmUserApi
 {
-    private readonly ISqlQueryEntitySetSupplier sqlApi;
-
-    internal CrmUserApi(ISqlQueryEntitySetSupplier sqlApi)
-        =>
-        this.sqlApi = sqlApi;
+    private static readonly DbSelectQuery DbRequest
+        =
+        DbUser.QueryAll with
+        {
+            Filter = DbUser.DefaultFilter
+        };
 }

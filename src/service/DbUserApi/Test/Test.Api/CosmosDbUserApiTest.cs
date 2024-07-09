@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 using System.Threading;
 using GarageGroup.Infra;
 using Moq;
@@ -17,10 +18,12 @@ public static partial class CosmosDbUserApiTest
         {
             StatusCode = HttpSuccessCode.OK,
             Body = HttpBody.SerializeAsJson(
-                value: new InnerDataverseUserId
+                value: new InnerDbUserJson
                 {
-                    DataverseUserId = new("4934c84c-f0cf-447c-bee9-2bc0112fb968")
-                }),
+                    DataverseUserId = new("d0bb0ec9-6fe4-41c6-afc7-78892a24fbce"),
+                    RowKey = new("b76e756f-7f6e-4df0-b470-8f0c0a04d18c"),
+                    PartitionKey = new("b76e756f-7f6e-4df0-b470-8f0c0a04d18c")
+                })
         };
 
     private static readonly CosmosDbUserApiOption SomeOption
@@ -33,6 +36,17 @@ public static partial class CosmosDbUserApiTest
         =
         new(
             azureUserId: new("5b228f06-d220-4006-844a-374df853108d"));
+
+    private static readonly DbUserDeleteIn SomeDeleteInput
+        =
+        new(
+            azureUserId: new("5e787817-004d-464a-a957-c2fc318b5455"));
+
+    private static readonly DbUserCreateIn SomeCreateInput
+        =
+        new(
+            azureUserId: new("b76e756f-7f6e-4df0-b470-8f0c0a04d18c"),
+            dataverseUserId: new("d0bb0ec9-6fe4-41c6-afc7-78892a24fbce"));
 
     private static Mock<IHttpApi> BuildMockHttpApi(
         in Result<HttpSendOut, HttpSendFailure> result)
@@ -53,5 +67,23 @@ public static partial class CosmosDbUserApiTest
     internal sealed record class InnerDataverseUserId
     {
         public Guid DataverseUserId { get; init; }
+    }
+
+    internal sealed record class InnerDbUserJson
+    {
+        [JsonPropertyName("DataverseUserId")]
+        public Guid DataverseUserId { get; init; }
+
+        [JsonPropertyName("RowKey")]
+        public Guid RowKey { get; init; }
+
+        [JsonPropertyName("PartitionKey")]
+        public Guid PartitionKey { get; init; }
+    }
+
+    private readonly record struct InnerDbUserSetJson
+    {
+        [JsonPropertyName("value")]
+        public FlatArray<InnerDbUserJson> Value { get; init; }
     }
 }
