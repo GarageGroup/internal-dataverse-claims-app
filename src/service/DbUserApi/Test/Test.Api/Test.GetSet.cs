@@ -89,11 +89,10 @@ partial class CosmosDbUserApiTest
         var mockDateProvider = BuildDateProvider(SomeDate);
 
         var api = new CosmosDbUserApi(mockHttpApi.Object, SomeOption, mockDateProvider);
-        var cancellationToken = new CancellationToken(false);
 
-        var actual = await api.GetUsersAsync(default, cancellationToken);
+        var actual = await api.GetUsersAsync(default, default);
 
-        var expected = new DbUserSetGetOut()
+        var expected = new DbUserSetGetOut
         {
             Users =
             [
