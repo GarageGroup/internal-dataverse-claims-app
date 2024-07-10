@@ -4,7 +4,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Serialization;
 using GarageGroup.Infra;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GarageGroup.Internal.Dataverse.Claims;
 
@@ -35,6 +34,10 @@ internal sealed partial class CosmosDbUserApi(IHttpApi httpApi, CosmosDbUserApiO
             new("Accept", AcceptHeader)
         ];
     }
+
+    private static Failure<Unit> MapHttpFailure(HttpSendFailure failure)
+        =>
+        failure.ToStandardFailure().WithFailureCode<Unit>(default);
 
     private readonly record struct DataverseUserIdJson
     {
