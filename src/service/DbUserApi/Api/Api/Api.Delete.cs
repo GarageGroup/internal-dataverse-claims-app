@@ -18,7 +18,7 @@ partial class CosmosDbUserApi
             httpApi.SendAsync)
         .Map(
             Unit.From,
-            static failure => failure.ToStandardFailure().WithFailureCode(default(Unit)));
+            MapHttpFailure);
 
     private HttpSendIn BuildHttpSendDeleteIn(Guid userId)
     {

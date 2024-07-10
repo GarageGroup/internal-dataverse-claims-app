@@ -18,18 +18,17 @@ partial class CosmosDbUserApi
             httpApi.SendAsync)
         .Map(
             Unit.From,
-            static failure => failure.ToStandardFailure().WithFailureCode(default(Unit)));
+            MapHttpFailure);
 
     private HttpSendIn BuildHttpSendCreateIn(DbUserCreateIn input)
     {
         var date = dateProvider.Date.ToString("R");
-        var stringToSign = $"{date}\n/{option.AccountName}/{TableName}";
 
         return new(
             method: HttpVerb.Post,
             requestUri: $"https://{option.AccountName}.table.cosmos.azure.com/{TableName}")
         {
-            Headers = BuildHeaders(date, stringToSign),
+            Headers = BuildHeaders(date, $"{date}\n/{option.AccountName}/{TableName}"),
             Body = HttpBody.SerializeAsJson(new DbUserCreateJson()
             {
                 DataverseUserId = input.DataverseUserId,
