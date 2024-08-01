@@ -5,17 +5,17 @@ VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "app", "app", "{2BA7BCBD-704E-4001-B394-C074FB4DFE70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunc", "src\app\AzureFunc\AzureFunc.csproj", "{6C04018C-FDED-498D-89BC-54CD201BC9C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureFunc", "src\app\AzureFunc\AzureFunc.csproj", "{6C04018C-FDED-498D-89BC-54CD201BC9C1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "endpoint", "endpoint", "{611DB22B-390B-4879-9695-57690C47B23F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Claims.Provide", "Claims.Provide", "{130E128C-E8C7-4B4D-8D8E-40F77EAB1009}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contract", "src\endpoint\Claims.Provide\Contract\Contract.csproj", "{76C57D10-A7CA-4F5F-87DF-CBA09A3FCE09}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contract", "src\endpoint\Claims.Provide\Contract\Contract.csproj", "{76C57D10-A7CA-4F5F-87DF-CBA09A3FCE09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Handler", "src\endpoint\Claims.Provide\Handler\Handler.csproj", "{D974AF1A-AF94-4C23-A189-37BBD90D3A61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Handler", "src\endpoint\Claims.Provide\Handler\Handler.csproj", "{D974AF1A-AF94-4C23-A189-37BBD90D3A61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "src\endpoint\Claims.Provide\Test\Test.csproj", "{B6CAA460-0212-404E-B32D-466E740F71B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "src\endpoint\Claims.Provide\Test\Test.csproj", "{B6CAA460-0212-404E-B32D-466E740F71B7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "service", "service", "{07970361-4C95-472D-A12C-E01E7D67E34F}"
 EndProject
@@ -23,25 +23,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CrmUserApi", "CrmUserApi", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DbUserApi", "DbUserApi", "{82BABE55-DA42-4AF0-8A89-DA51497D7FFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contract", "src\service\CrmUserApi\Contract\Contract.csproj", "{D57DF186-094D-4B9F-BA93-64F509582ECA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contract", "src\service\CrmUserApi\Contract\Contract.csproj", "{D57DF186-094D-4B9F-BA93-64F509582ECA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "src\service\CrmUserApi\Api\Api.csproj", "{98159C99-255E-4562-B59D-2AA4397FE01A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "src\service\CrmUserApi\Api\Api.csproj", "{98159C99-255E-4562-B59D-2AA4397FE01A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "src\service\CrmUserApi\Test\Test.csproj", "{0D9E58E7-2D4D-487A-AE21-81AC9BEB4C39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "src\service\CrmUserApi\Test\Test.csproj", "{0D9E58E7-2D4D-487A-AE21-81AC9BEB4C39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contract", "src\service\DbUserApi\Contract\Contract.csproj", "{28CE0629-8D45-4CD4-89DA-995DDE260F13}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contract", "src\service\DbUserApi\Contract\Contract.csproj", "{28CE0629-8D45-4CD4-89DA-995DDE260F13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "src\service\DbUserApi\Api\Api.csproj", "{5E85ABEA-3A33-4A14-92C4-1A6B762A7603}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "src\service\DbUserApi\Api\Api.csproj", "{5E85ABEA-3A33-4A14-92C4-1A6B762A7603}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "src\service\DbUserApi\Test\Test.csproj", "{344F7D88-EADB-4ECE-9C0A-1A63023CB5EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "src\service\DbUserApi\Test\Test.csproj", "{344F7D88-EADB-4ECE-9C0A-1A63023CB5EC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Users.Sync", "Users.Sync", "{DA2CAD06-C599-4B79-A58D-2048B024598D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contract", "src\endpoint\Users.Sync\Contract\Contract.csproj", "{6794BD8A-C155-48DE-A19D-EDA7290A983B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contract", "src\endpoint\Users.Sync\Contract\Contract.csproj", "{6794BD8A-C155-48DE-A19D-EDA7290A983B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Handler", "src\endpoint\Users.Sync\Handler\Handler.csproj", "{FB5EEB4C-B9EF-4FBF-A01C-67BF6E5358EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Handler", "src\endpoint\Users.Sync\Handler\Handler.csproj", "{FB5EEB4C-B9EF-4FBF-A01C-67BF6E5358EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "src\endpoint\Users.Sync\Test\Test.csproj", "{DF276529-D381-47A7-82F8-0B03CEA465B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "src\endpoint\Users.Sync\Test\Test.csproj", "{DF276529-D381-47A7-82F8-0B03CEA465B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,9 +105,6 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {3CAFDDB2-0960-4B69-A27C-F565FAFEBA6B}
-	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6C04018C-FDED-498D-89BC-54CD201BC9C1} = {2BA7BCBD-704E-4001-B394-C074FB4DFE70}
 		{130E128C-E8C7-4B4D-8D8E-40F77EAB1009} = {611DB22B-390B-4879-9695-57690C47B23F}
@@ -126,5 +123,8 @@ Global
 		{6794BD8A-C155-48DE-A19D-EDA7290A983B} = {DA2CAD06-C599-4B79-A58D-2048B024598D}
 		{FB5EEB4C-B9EF-4FBF-A01C-67BF6E5358EB} = {DA2CAD06-C599-4B79-A58D-2048B024598D}
 		{DF276529-D381-47A7-82F8-0B03CEA465B2} = {DA2CAD06-C599-4B79-A58D-2048B024598D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3CAFDDB2-0960-4B69-A27C-F565FAFEBA6B}
 	EndGlobalSection
 EndGlobal

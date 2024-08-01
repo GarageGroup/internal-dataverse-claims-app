@@ -10,6 +10,8 @@
     <NoWarn>$(NoWarn);IDE0130</NoWarn>
     <RootNamespace>GarageGroup.Internal.Dataverse.Claims</RootNamespace>
     <AssemblyName>GarageGroup.Internal.Dataverse.Claims.AzureFunc</AssemblyName>
+	<!--<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>-->
+	<!--<CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>-->
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,6 +36,8 @@
     <PackageReference Include="GarageGroup.Infra.Sql.Api" Version="2.6.0" />
     <PackageReference Include="GarageGroup.Infra.Sql.Api.Provider.Dataverse" Version="0.1.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.2.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" Version="1.2.1" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Timer" Version="4.3.1" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.17.2" OutputItemType="Analyzer" />
   </ItemGroup>
 

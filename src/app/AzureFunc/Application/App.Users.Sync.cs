@@ -6,7 +6,7 @@ namespace GarageGroup.Internal.Dataverse.Claims;
 
 partial class Application
 {
-    [HttpFunction("SyncUsers", HttpMethodName.Post, Route = "sync-users", AuthLevel = HttpAuthorizationLevel.Function)]
+    [HttpFunction("SyncUsersByHttp", HttpMethodName.Post, Route = "sync-users", AuthLevel = HttpAuthorizationLevel.Function)]
     internal static Dependency<IUsersSyncHandler> UseUsersSyncHandler()
         =>
         Pipeline.Pipe(
