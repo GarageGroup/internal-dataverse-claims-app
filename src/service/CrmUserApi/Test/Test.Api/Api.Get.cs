@@ -24,7 +24,7 @@ partial class CrmUserApiTest
                 "u.systemuserid AS DataverseUserId",
                 "u.azureactivedirectoryobjectid AS AzureUserId"),
             Filter = new DbRawFilter(
-                "u.title IS NOT NULL AND u.isdisabled = 0 AND u.azureactivedirectoryobjectid IS NOT NULL")
+                "u.applicationid IS NULL AND u.isdisabled = 0 AND u.azureactivedirectoryobjectid IS NOT NULL")
         };
         mockSql.Verify(a => a.QueryEntitySetOrFailureAsync<DbUser>(expectedInput, cancellationToken), Times.Once);
     }
