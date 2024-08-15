@@ -12,14 +12,23 @@ internal static partial class Application
         =>
         UseDataverseSqlApi().UseCrmUserApi();
 
+    //private static Dependency<IDbUserApi> UseDbUserApi()
+    //    =>
+    //    PrimaryHandler.UseStandardSocketsHttpHandler()
+    //    .UseLogging("CosmosDbHttpApi")
+    //    .UsePollyStandard()
+    //    .UseHttpApi()
+    //    .With(ResolveCosmosDbUserApiOption)
+    //    .UseCosmosDbUserApi();
+
     private static Dependency<IDbUserApi> UseDbUserApi()
         =>
         PrimaryHandler.UseStandardSocketsHttpHandler()
-        .UseLogging("CosmosDbHttpApi")
+        .UseLogging("BlobStorageHttpApi", HttpLoggerType.RequestHeaders)
         .UsePollyStandard()
         .UseHttpApi()
-        .With(ResolveCosmosDbUserApiOption)
-        .UseCosmosDbUserApi();
+        .With(ResolveBlobStorageUserApiOption)
+        .UseBlobStorageUserApi();
 
     private static Dependency<ISqlApi> UseDataverseSqlApi()
         =>
@@ -31,6 +40,16 @@ internal static partial class Application
         
         return new(
             accountName: section["AccountName"].OrEmpty(),
+            accountKey: section["AccountKey"].OrEmpty());
+    }
+
+    private static BlobStorageUserApiOption ResolveBlobStorageUserApiOption(IServiceProvider serviceProvider)
+    {
+        var section = serviceProvider.GetRequiredService<IConfiguration>().GetRequiredSection("BlobStorage");
+
+        return new(
+            accountName: section["AccountName"].OrEmpty(),
+            containerName: section["ContainerName"].OrEmpty(),
             accountKey: section["AccountKey"].OrEmpty());
     }
 }
