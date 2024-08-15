@@ -12,23 +12,34 @@ internal static partial class Application
         =>
         UseDataverseSqlApi().UseCrmUserApi();
 
-    //private static Dependency<IDbUserApi> UseDbUserApi()
-    //    =>
-    //    PrimaryHandler.UseStandardSocketsHttpHandler()
-    //    .UseLogging("CosmosDbHttpApi")
-    //    .UsePollyStandard()
-    //    .UseHttpApi()
-    //    .With(ResolveCosmosDbUserApiOption)
-    //    .UseCosmosDbUserApi();
-
-    private static Dependency<IDbUserApi> UseDbUserApi()
+    private static Dependency<IDbUserApi> UseCosmosDbUserApi()
         =>
         PrimaryHandler.UseStandardSocketsHttpHandler()
-        .UseLogging("BlobStorageHttpApi", HttpLoggerType.RequestHeaders)
+        .UseLogging("CosmosDbHttpApi")
+        .UsePollyStandard()
+        .UseHttpApi()
+        .With(ResolveCosmosDbUserApiOption)
+        .UseCosmosDbUserApi();
+
+    private static Dependency<IDbUserApi> UseBlobStorageUserApi()
+        =>
+        PrimaryHandler.UseStandardSocketsHttpHandler()
+        .UseLogging("BlobStorageHttpApi")
         .UsePollyStandard()
         .UseHttpApi()
         .With(ResolveBlobStorageUserApiOption)
         .UseBlobStorageUserApi();
+
+    private static IDbUserApi ResolveDbUserApi(IServiceProvider serviceProvider)
+    {
+        var dbType = serviceProvider.GetRequiredService<IConfiguration>()["DataBaseType"];
+        if (dbType?.Equals("CosmosDb", StringComparison.InvariantCultureIgnoreCase) is true)
+        {
+            return UseCosmosDbUserApi().Resolve(serviceProvider);
+        }
+
+        return UseBlobStorageUserApi().Resolve(serviceProvider);
+    }
 
     private static Dependency<ISqlApi> UseDataverseSqlApi()
         =>

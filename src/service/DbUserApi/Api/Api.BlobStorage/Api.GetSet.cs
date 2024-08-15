@@ -34,29 +34,28 @@ partial class BlobStorageUserApi
             foreach (var blob in blobs)
             {
                 var metadata = blob.Element("Metadata");
-                if (metadata != null)
+                if (metadata is not null)
                 {
                     string? dataverseUserId = null;
                     string? azureUserId = null;
                     foreach (var metadataItem in metadata.Elements())
                     {
                         var tag = metadataItem.Name.LocalName;
-                        if (tag == "dataverseuserid")
+                        if (tag.Equals(MetadataDataverseUserIdName, StringComparison.InvariantCulture))
                         {
                             dataverseUserId = metadataItem.Value;
                         }
 
-                        if (tag == "azureuserid")
+                        if (tag.Equals(MetadataAzureUserIdName, StringComparison.InvariantCulture))
                         {
                             azureUserId = metadataItem.Value;
                         }
 
                         if (string.IsNullOrWhiteSpace(dataverseUserId) is false && string.IsNullOrWhiteSpace(azureUserId) is false)
                         {
-                            result.Add(
-                                new(
-                                    azureUserId: Guid.Parse(azureUserId),
-                                    dataverseUserId: Guid.Parse(dataverseUserId)));
+                            result.Add(new(
+                                azureUserId: Guid.Parse(azureUserId),
+                                dataverseUserId: Guid.Parse(dataverseUserId)));
                             break;
                         }
                     }
@@ -124,9 +123,9 @@ partial class BlobStorageUserApi
 
         return
         [
-            new("Authorization", $"SharedKey {option.AccountName}:{token}"),
-            new("x-ms-date", date),
-            new("x-ms-version", Version)
+            new(AuthorizationHeaderName, $"SharedKey {option.AccountName}:{token}"),
+            new(DateHeaderName, date),
+            new(VersionHeaderName, Version)
         ];
     }
 
@@ -134,31 +133,16 @@ partial class BlobStorageUserApi
     {
         using var hashAlgorithm = new HMACSHA256(Convert.FromBase64String(option.AccountKey));
 
+        var canonicalizedHeaders = $"{DateHeaderName}:{date}\n{VersionHeaderName}:{Version}";
         var canonicalizedResource = $"/{option.AccountName}/{option.ContainerName}\ncomp:list\ninclude:metadata\nrestype:container";
         if (string.IsNullOrEmpty(nextMarker) is false)
         {
             canonicalizedResource = $"/{option.AccountName}/{option.ContainerName}\ncomp:list\ninclude:metadata\nmarker:{nextMarker}\nrestype:container";
         }
 
-        string stringToSign = string.Join("\n",
-        [
-            "GET",  // HTTP метод
-            "",     // Content-Encoding
-            "",     // Content-Language
-            "",     // Content-Length (пустое для GET)
-            "",     // Content-MD5
-            "",     // Content-Type
-            "",     // Date
-            "",     // If-Modified-Since
-            "",     // If-Match
-            "",     // If-None-Match
-            "",     // If-Unmodified-Since
-            "",     // Range
-            $"x-ms-date:{date}\nx-ms-version:{Version}",    // CanonicalizedHeaders
-            canonicalizedResource   // CanonicalizedResource
-        ]);
-
+        string stringToSign = BuildStringToSign("GET", null, null, canonicalizedHeaders, canonicalizedResource);
         byte[] signatureBytes = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(stringToSign));
+
         return Convert.ToBase64String(signatureBytes);
     }
 }

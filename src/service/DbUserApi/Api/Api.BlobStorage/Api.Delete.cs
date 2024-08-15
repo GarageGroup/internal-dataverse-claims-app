@@ -30,6 +30,7 @@ partial class BlobStorageUserApi
             requestUri: $"https://{option.AccountName}.blob.core.windows.net/{option.ContainerName}/{userId}.txt")
         {
             Headers = BuildDeleteHeaders(userId),
+            SuccessType = HttpSuccessType.OnlyStatusCode
         };
 
     private FlatArray<KeyValuePair<string, string>> BuildDeleteHeaders(Guid userId)
@@ -39,9 +40,9 @@ partial class BlobStorageUserApi
 
         return
         [
-            new("Authorization", $"SharedKey {option.AccountName}:{token}"),
-            new("x-ms-date", date),
-            new("x-ms-version", Version),
+            new(AuthorizationHeaderName, $"SharedKey {option.AccountName}:{token}"),
+            new(DateHeaderName, date),
+            new(VersionHeaderName, Version),
             new("x-ms-delete-snapshots", "include")
         ];
     }
@@ -50,25 +51,12 @@ partial class BlobStorageUserApi
     {
         using var hashAlgorithm = new HMACSHA256(Convert.FromBase64String(option.AccountKey));
 
-        string stringToSign = string.Join("\n",
-        [
-            "DELETE",   // HTTP метод
-            "",         // Content-Encoding
-            "",         // Content-Language
-            "",         // Content-Length (пустое для GET)
-            "",         // Content-MD5
-            "",         // Content-Type
-            "",         // Date
-            "",         // If-Modified-Since
-            "",         // If-Match
-            "",         // If-None-Match
-            "",         // If-Unmodified-Since
-            "",         // Range
-            $"x-ms-date:{date}\nx-ms-delete-snapshots:include\nx-ms-version:{Version}", // CanonicalizedHeaders
-            $"/{option.AccountName}/{option.ContainerName}/{userId}.txt"    // CanonicalizedResource
-        ]);
+        var canonicalizedHeaders = $"{DateHeaderName}:{date}\nx-ms-delete-snapshots:include\n{VersionHeaderName}:{Version}";
+        var canonicalizedResource = $"/{option.AccountName}/{option.ContainerName}/{userId}.txt";
 
+        string stringToSign = BuildStringToSign("DELETE", null, null, canonicalizedHeaders, canonicalizedResource);
         byte[] signatureBytes = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(stringToSign));
+
         return Convert.ToBase64String(signatureBytes);
     }
 }

@@ -10,7 +10,7 @@ namespace GarageGroup.Internal.Dataverse.Claims.Service.DbUserApi.Test;
 partial class CosmosDbUserApiTest
 {
     [Fact]
-    public static async Task CreateUserAsync_ExpectHttpApiSendCalledOnce()
+    public static async Task DeleteUserAsync_ExpectHttpApiSendCalledOnce()
     {
         var mockHttpApi = BuildMockHttpApi(SomeHttpOutput);
 
@@ -23,30 +23,24 @@ partial class CosmosDbUserApiTest
 
         var api = new CosmosDbUserApi(mockHttpApi.Object, option, mockDateProvider);
 
-        var input = new DbUserCreateIn(
-            azureUserId: new("b76e756f-7f6e-4df0-b470-8f0c0a04d18c"),
-            dataverseUserId: new("d0bb0ec9-6fe4-41c6-afc7-78892a24fbce"));
+        var input = new DbUserDeleteIn(
+            azureUserId: new("b76e756f-7f6e-4df0-b470-8f0c0a04d18c"));
 
         var cancellationToken = new CancellationToken(false);
-        _ = await api.CreateUserAsync(input, cancellationToken);
+        _ = await api.DeleteUserAsync(input, cancellationToken);
 
         var expectedInput = new HttpSendIn(
-            method: HttpVerb.Post,
-            requestUri: "https://AccountName.table.cosmos.azure.com/DataverseUsers")
+            method: HttpVerb.Delete,
+            requestUri: "https://AccountName.table.cosmos.azure.com/DataverseUsers" +
+                "(PartitionKey='b76e756f-7f6e-4df0-b470-8f0c0a04d18c',RowKey='b76e756f-7f6e-4df0-b470-8f0c0a04d18c')")
         {
             Headers =
             [
-                new("authorization", "SharedKeyLite AccountName:88gZ/q3ms6VWsIaZvpgzYIXrt3lg9D7rfcGsThQoul4="),
+                new("authorization", "SharedKeyLite AccountName:uOIQZAiwwjm0b4GsDZBV0kxDGbliMMNIz8pJFoXS5K4="),
                 new("x-ms-date", "Wed, 03 Jul 2024 14:41:12 GMT"),
                 new("x-ms-version", "2019-02-02"),
                 new("accept", "application/json;odata=nometadata")
             ],
-            Body = HttpBody.SerializeAsJson(new InnerDbUserJson
-            {
-                DataverseUserId = new("d0bb0ec9-6fe4-41c6-afc7-78892a24fbce"),
-                RowKey = new("b76e756f-7f6e-4df0-b470-8f0c0a04d18c"),
-                PartitionKey = new("b76e756f-7f6e-4df0-b470-8f0c0a04d18c")
-            }),
             SuccessType = HttpSuccessType.OnlyStatusCode
         };
 
@@ -54,33 +48,35 @@ partial class CosmosDbUserApiTest
     }
 
     [Theory]
-    [MemberData(nameof(CosmosDbUserApiSource.OutputFailureTestData), MemberType = typeof(CosmosDbUserApiSource))]
-    public static async Task CreateUserAsync_HttpApiSendResultIsFailure_ExpectedFailure(
+    [MemberData(nameof(DbUserApiSource.OutputFailureTestData), MemberType = typeof(DbUserApiSource))]
+    public static async Task DeleteUserAsync_HttpApiSendResultIsFailure_ExpectedFailure(
         HttpSendFailure httpSendFailure, Failure<Unit> expected)
     {
         var mockHttpApi = BuildMockHttpApi(httpSendFailure);
         var mockDateProvider = BuildDateProvider(SomeDate);
 
         var api = new CosmosDbUserApi(mockHttpApi.Object, SomeOption, mockDateProvider);
-        var actual = await api.CreateUserAsync(SomeCreateInput, default);
+        var actual = await api.DeleteUserAsync(SomeDeleteInput, default);
 
-        Assert.Equal(expected, actual);
+        Assert.StrictEqual(expected, actual);
     }
 
     [Fact]
-    public static async Task CreateUserAsync_HttpApiSendResultIsSuccess_ExpectedSuccess()
+    public static async Task DeleteUserAsync_HttpApiSendResultIsSuccess_ExpectedSuccess()
     {
         var httpOut = new HttpSendOut
         {
-            StatusCode = HttpSuccessCode.Created
+            StatusCode = HttpSuccessCode.NoContent,
         };
 
         var mockHttpApi = BuildMockHttpApi(httpOut);
         var mockDateProvider = BuildDateProvider(SomeDate);
 
         var api = new CosmosDbUserApi(mockHttpApi.Object, SomeOption, mockDateProvider);
-        var actual = await api.CreateUserAsync(SomeCreateInput, default);
 
-        Assert.StrictEqual(Result.Success<Unit>(default), actual);
+        var actual = await api.DeleteUserAsync(SomeDeleteInput, default);
+        var expected = Result.Success<Unit>(default);
+
+        Assert.StrictEqual(expected, actual);
     }
 }

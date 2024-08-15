@@ -33,7 +33,7 @@ partial class BlobStorageUserApi
             Headers = BuildCreateHeaders(input),
             Body = new HttpBody()
             {
-                Content = new("1"),
+                Content = new(FileContent),
                 Type = new(MediaTypeNames.Text.Plain)
             },
             SuccessType = HttpSuccessType.OnlyStatusCode,
@@ -47,11 +47,11 @@ partial class BlobStorageUserApi
 
         return
         [
-            new("Authorization", $"SharedKey {option.AccountName}:{token}"),
-            new("x-ms-date", date),
-            new("x-ms-version", Version),
-            new("x-ms-meta-dataverseuserid", input.DataverseUserId.ToString()),
-            new("x-ms-meta-azureuserid", input.AzureUserId.ToString()),
+            new(AuthorizationHeaderName, $"SharedKey {option.AccountName}:{token}"),
+            new(DateHeaderName, date),
+            new(VersionHeaderName, Version),
+            new($"{MetadataHeaderName}-{MetadataDataverseUserIdName}", input.DataverseUserId.ToString()),
+            new($"{MetadataHeaderName}-{MetadataAzureUserIdName}", input.AzureUserId.ToString()),
             new("x-ms-blob-type", "BlockBlob")
         ];
     }
@@ -60,25 +60,16 @@ partial class BlobStorageUserApi
     {
         using var hashAlgorithm = new HMACSHA256(Convert.FromBase64String(option.AccountKey));
 
-        string stringToSign = string.Join("\n",
-        [
-            "PUT",          // HTTP метод
-            "",             // Content-Encoding
-            "",             // Content-Language
-            "1",            // Content-Length (пустое для GET)
-            "",             // Content-MD5
-            "text/plain",   // Content-Type
-            "",             // Date
-            "",             // If-Modified-Since
-            "",             // If-Match
-            "",             // If-None-Match
-            "",             // If-Unmodified-Since
-            "",             // Range
-            $"x-ms-blob-type:BlockBlob\nx-ms-date:{date}\nx-ms-meta-azureuserid:{input.AzureUserId}\nx-ms-meta-dataverseuserid:{input.DataverseUserId}\nx-ms-version:{Version}",    // CanonicalizedHeaders
-            $"/{option.AccountName}/{option.ContainerName}/{input.AzureUserId}.txt" // CanonicalizedResource
-        ]);
+        var canonicalizedHeaders = $"x-ms-blob-type:BlockBlob\n" +
+            $"{DateHeaderName}:{date}\n" +
+            $"{MetadataHeaderName}-{MetadataAzureUserIdName}:{input.AzureUserId}\n" +
+            $"{MetadataHeaderName}-{MetadataDataverseUserIdName}:{input.DataverseUserId}\n" +
+            $"{VersionHeaderName}:{Version}";
+        var canonicalizedResource = $"/{option.AccountName}/{option.ContainerName}/{input.AzureUserId}.txt";
 
+        var stringToSign = BuildStringToSign("PUT", FileContent.Length.ToString(), ContentType, canonicalizedHeaders, canonicalizedResource);
         byte[] signatureBytes = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(stringToSign));
+
         return Convert.ToBase64String(signatureBytes);
     }
 }
