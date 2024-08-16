@@ -1,9 +1,9 @@
-using GarageGroup.Infra;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using GarageGroup.Infra;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 
 namespace GarageGroup.Internal.Dataverse.Claims;
 
@@ -14,6 +14,5 @@ partial class Function
         [HttpTrigger(AuthorizationLevel.Function, "POST", Route = "sync-users")] HttpRequestData requestData,
         CancellationToken cancellationToken)
         =>
-        Application.UseUsersSyncHandler()
-        .RunHttpFunctionAsync<IUsersSyncHandler, Unit, Unit>(requestData, cancellationToken);
+        Application.UseUsersSyncHandler().RunHttpFunctionAsync<IUsersSyncHandler, Unit, Unit>(requestData, cancellationToken);
 }

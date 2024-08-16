@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 using GarageGroup.Infra;
@@ -48,7 +47,7 @@ partial class BlobStorageUserApiTest
             Body = new HttpBody()
             {
                 Content = new("1"),
-                Type = new(MediaTypeNames.Text.Plain)
+                Type = new("text/plain")
             },
             SuccessType = HttpSuccessType.OnlyStatusCode
         };

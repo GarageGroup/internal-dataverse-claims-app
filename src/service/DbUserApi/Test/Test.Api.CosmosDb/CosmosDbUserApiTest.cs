@@ -53,9 +53,9 @@ public static partial class CosmosDbUserApiTest
     {
         var mock = new Mock<IHttpApi>();
 
-        _ = mock
-            .Setup(static a => a.SendAsync(It.IsAny<HttpSendIn>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
+        _ = mock.Setup(
+            static a => a.SendAsync(It.IsAny<HttpSendIn>(), It.IsAny<CancellationToken>()))
+        .ReturnsAsync(result);
 
         return mock;
     }

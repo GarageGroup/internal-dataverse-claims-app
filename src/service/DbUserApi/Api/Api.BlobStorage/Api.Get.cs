@@ -22,7 +22,7 @@ partial class BlobStorageUserApi
             httpApi.SendAsync)
         .Map(
             static success => new DbUserGetOut(
-                dataverseUserId: Guid.Parse(success.Headers.AsEnumerable().FirstOrDefault(a => a.Key == "x-ms-meta-dataverseuserid").Value)),
+                dataverseUserId: Guid.Parse(success.Headers.AsEnumerable().FirstOrDefault(IsDataverseUserId).Value)),
             static failure => failure.ToStandardFailure().MapFailureCode(MapFailureCode));
 
     private HttpSendIn BuildHttpSendGetIn(Guid userId)
@@ -32,6 +32,7 @@ partial class BlobStorageUserApi
             requestUri: $"https://{option.AccountName}.blob.core.windows.net/{option.ContainerName}/{userId}.txt")
         {
             Headers = BuildGetHeaders(userId),
+            SuccessType = HttpSuccessType.OnlyHeaders
         };
 
     private FlatArray<KeyValuePair<string, string>> BuildGetHeaders(Guid userId)
@@ -54,11 +55,15 @@ partial class BlobStorageUserApi
         var canonicalizedHeaders = $"{DateHeaderName}:{date}\n{VersionHeaderName}:{Version}";
         var canonicalizedResource = $"/{option.AccountName}/{option.ContainerName}/{userId}.txt";
 
-        string stringToSign = BuildStringToSign("HEAD", null, null, canonicalizedHeaders, canonicalizedResource);
-        byte[] signatureBytes = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(stringToSign));
+        var stringToSign = BuildStringToSign("HEAD", null, null, canonicalizedHeaders, canonicalizedResource);
+        var signatureBytes = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(stringToSign));
 
         return Convert.ToBase64String(signatureBytes);
     }
+
+    private static bool IsDataverseUserId(KeyValuePair<string, string> kv)
+        =>
+        string.Equals(kv.Key, $"{MetadataHeaderName}-{MetadataDataverseUserIdName}", StringComparison.InvariantCulture);
 
     private static DbUserGetFailureCode MapFailureCode(HttpFailureCode failureCode)
         =>

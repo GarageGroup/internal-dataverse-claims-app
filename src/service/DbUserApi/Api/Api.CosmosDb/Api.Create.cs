@@ -24,17 +24,19 @@ partial class CosmosDbUserApi
     {
         var date = dateProvider.Date.ToString("R");
 
+        var value = new DbUserCreateJson
+        {
+            DataverseUserId = input.DataverseUserId,
+            PartitionKey = input.AzureUserId,
+            RowKey = input.AzureUserId
+        };
+
         return new(
             method: HttpVerb.Post,
             requestUri: $"https://{option.AccountName}.table.cosmos.azure.com/{TableName}")
         {
             Headers = BuildHeaders(date, $"{date}\n/{option.AccountName}/{TableName}"),
-            Body = HttpBody.SerializeAsJson(new DbUserCreateJson()
-            {
-                DataverseUserId = input.DataverseUserId,
-                PartitionKey = input.AzureUserId,
-                RowKey = input.AzureUserId,
-            }),
+            Body = HttpBody.SerializeAsJson(value),
             SuccessType = HttpSuccessType.OnlyStatusCode
         };
     }

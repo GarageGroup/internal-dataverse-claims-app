@@ -12,9 +12,9 @@ partial class BlobStorageUserApiTest
     [Theory]
     [MemberData(nameof(DbUserApiSource.GetSetInputTestData), MemberType = typeof(DbUserApiSource))]
     public static async Task GetUsersAsync_ExpectHttpApiSendCalledOnce(
-        BlobStorageUserApiOption option, 
-        DateTime date, 
-        FlatArray<HttpSendIn> expectedInputs, 
+        BlobStorageUserApiOption option,
+        DateTime date,
+        FlatArray<HttpSendIn> expectedInputs,
         FlatArray<Result<HttpSendOut, HttpSendFailure>> httpOutputs)
     {
         var mockHttpApi = BuildMockHttpApi(httpOutputs);
@@ -27,8 +27,8 @@ partial class BlobStorageUserApiTest
 
         foreach (var expectedInput in expectedInputs)
         {
-            mockHttpApi.Verify(x => x.SendAsync(expectedInput, cancellationToken), Times.Once);
-        }        
+            mockHttpApi.Verify(a => a.SendAsync(expectedInput, cancellationToken), Times.Once);
+        }
     }
 
     [Theory]
@@ -50,8 +50,7 @@ partial class BlobStorageUserApiTest
     [Theory]
     [MemberData(nameof(DbUserApiSource.GetSetOutTestData), MemberType = typeof(DbUserApiSource))]
     public static async Task GetUsersAsync_HttpApiSendResultIsSuccess_ExpectedSuccess(
-        FlatArray<Result<HttpSendOut, HttpSendFailure>> httpOutputs,
-        DbUserSetGetOut expected)
+        FlatArray<Result<HttpSendOut, HttpSendFailure>> httpOutputs, DbUserSetGetOut expected)
     {
         var mockHttpApi = BuildMockHttpApi(httpOutputs);
         var mockDateProvider = BuildDateProvider(SomeDate);

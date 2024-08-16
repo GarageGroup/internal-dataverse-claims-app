@@ -39,10 +39,11 @@ partial class BlobStorageUserApiTest
                 new("authorization", "SharedKey AccountName:m+32YJEaaCighOY73cCc5MNfFAFAPrZzapmcZYnvYO8="),
                 new("x-ms-date", "Wed, 03 Jul 2024 14:41:12 GMT"),
                 new("x-ms-version", "2022-11-02")
-            ]
+            ],
+            SuccessType = HttpSuccessType.OnlyHeaders
         };
 
-        mockHttpApi.Verify(x => x.SendAsync(expectedInput, cancellationToken), Times.Once);
+        mockHttpApi.Verify(a => a.SendAsync(expectedInput, cancellationToken), Times.Once);
     }
 
     [Theory]

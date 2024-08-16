@@ -31,12 +31,12 @@ partial class BlobStorageUserApi
             requestUri: $"https://{option.AccountName}.blob.core.windows.net/{option.ContainerName}/{input.AzureUserId}.txt")
         {
             Headers = BuildCreateHeaders(input),
-            Body = new HttpBody()
+            Body = new()
             {
                 Content = new(FileContent),
                 Type = new(MediaTypeNames.Text.Plain)
             },
-            SuccessType = HttpSuccessType.OnlyStatusCode,
+            SuccessType = HttpSuccessType.OnlyStatusCode
         };
     
 
@@ -65,10 +65,13 @@ partial class BlobStorageUserApi
             $"{MetadataHeaderName}-{MetadataAzureUserIdName}:{input.AzureUserId}\n" +
             $"{MetadataHeaderName}-{MetadataDataverseUserIdName}:{input.DataverseUserId}\n" +
             $"{VersionHeaderName}:{Version}";
+
         var canonicalizedResource = $"/{option.AccountName}/{option.ContainerName}/{input.AzureUserId}.txt";
 
-        var stringToSign = BuildStringToSign("PUT", FileContent.Length.ToString(), ContentType, canonicalizedHeaders, canonicalizedResource);
-        byte[] signatureBytes = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(stringToSign));
+        var stringToSign = BuildStringToSign(
+            "PUT", FileContent.Length.ToString(), MediaTypeNames.Text.Plain, canonicalizedHeaders, canonicalizedResource);
+
+        var signatureBytes = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(stringToSign));
 
         return Convert.ToBase64String(signatureBytes);
     }

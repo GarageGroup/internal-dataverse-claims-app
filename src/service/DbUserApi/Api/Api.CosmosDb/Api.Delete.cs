@@ -27,8 +27,7 @@ partial class CosmosDbUserApi
 
         return new(
             method: HttpVerb.Delete,
-            requestUri: $"https://{option.AccountName}.table.cosmos.azure.com/" +
-                $"{TableName}(PartitionKey='{userId}',RowKey='{userId}')")
+            requestUri: $"https://{option.AccountName}.table.cosmos.azure.com/{TableName}(PartitionKey='{userId}',RowKey='{userId}')")
         {
             Headers = BuildHeaders(date, stringToSign),
             SuccessType = HttpSuccessType.OnlyStatusCode

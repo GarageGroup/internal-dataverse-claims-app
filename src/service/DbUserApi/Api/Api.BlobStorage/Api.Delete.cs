@@ -54,8 +54,8 @@ partial class BlobStorageUserApi
         var canonicalizedHeaders = $"{DateHeaderName}:{date}\nx-ms-delete-snapshots:include\n{VersionHeaderName}:{Version}";
         var canonicalizedResource = $"/{option.AccountName}/{option.ContainerName}/{userId}.txt";
 
-        string stringToSign = BuildStringToSign("DELETE", null, null, canonicalizedHeaders, canonicalizedResource);
-        byte[] signatureBytes = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(stringToSign));
+        var stringToSign = BuildStringToSign("DELETE", null, null, canonicalizedHeaders, canonicalizedResource);
+        var signatureBytes = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(stringToSign));
 
         return Convert.ToBase64String(signatureBytes);
     }

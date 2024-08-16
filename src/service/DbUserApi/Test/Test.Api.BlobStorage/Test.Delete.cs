@@ -66,7 +66,7 @@ partial class BlobStorageUserApiTest
     {
         var httpOut = new HttpSendOut
         {
-            StatusCode = HttpSuccessCode.NoContent,
+            StatusCode = HttpSuccessCode.NoContent
         };
 
         var mockHttpApi = BuildMockHttpApi(httpOut);

@@ -18,9 +18,9 @@ public static partial class BlobStorageUserApiTest
         new()
         {
             StatusCode = HttpSuccessCode.OK,
-            Body = new HttpBody()
+            Body = new()
             {
-                Content = new(""),
+                Content = new("<?xml version=\"1.0\" encoding=\"utf-8\"?><EnumerationResults></EnumerationResults>"),
                 Type = new(MediaTypeNames.Text.Xml)
             },
             Headers =
@@ -58,9 +58,9 @@ public static partial class BlobStorageUserApiTest
     {
         var mock = new Mock<IHttpApi>();
 
-        _ = mock
-            .Setup(static a => a.SendAsync(It.IsAny<HttpSendIn>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
+        _ = mock.Setup(
+            static a => a.SendAsync(It.IsAny<HttpSendIn>(), It.IsAny<CancellationToken>()))
+        .ReturnsAsync(result);
 
         return mock;
     }
@@ -71,8 +71,10 @@ public static partial class BlobStorageUserApiTest
         var queue = new Queue<Result<HttpSendOut, HttpSendFailure>>(results.AsEnumerable());
 
         var mock = new Mock<IHttpApi>();
-        _ = mock.Setup(static a => a.SendAsync(It.IsAny<HttpSendIn>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(queue.Dequeue);
+
+        _ = mock.Setup(
+            static a => a.SendAsync(It.IsAny<HttpSendIn>(), It.IsAny<CancellationToken>()))
+        .ReturnsAsync(queue.Dequeue);
 
         return mock;
     }

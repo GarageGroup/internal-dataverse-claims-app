@@ -12,6 +12,17 @@ internal static partial class Application
         =>
         UseDataverseSqlApi().UseCrmUserApi();
 
+    private static IDbUserApi ResolveDbUserApi(IServiceProvider serviceProvider)
+    {
+        var dbType = serviceProvider.GetRequiredService<IConfiguration>()["DataBaseType"];
+        if (dbType?.Equals("CosmosDb", StringComparison.InvariantCultureIgnoreCase) is true)
+        {
+            return UseCosmosDbUserApi().Resolve(serviceProvider);
+        }
+
+        return UseBlobStorageUserApi().Resolve(serviceProvider);
+    }
+
     private static Dependency<IDbUserApi> UseCosmosDbUserApi()
         =>
         PrimaryHandler.UseStandardSocketsHttpHandler()
@@ -29,17 +40,6 @@ internal static partial class Application
         .UseHttpApi()
         .With(ResolveBlobStorageUserApiOption)
         .UseBlobStorageUserApi();
-
-    private static IDbUserApi ResolveDbUserApi(IServiceProvider serviceProvider)
-    {
-        var dbType = serviceProvider.GetRequiredService<IConfiguration>()["DataBaseType"];
-        if (dbType?.Equals("CosmosDb", StringComparison.InvariantCultureIgnoreCase) is true)
-        {
-            return UseCosmosDbUserApi().Resolve(serviceProvider);
-        }
-
-        return UseBlobStorageUserApi().Resolve(serviceProvider);
-    }
 
     private static Dependency<ISqlApi> UseDataverseSqlApi()
         =>

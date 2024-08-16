@@ -19,46 +19,55 @@ partial class BlobStorageUserApi
 
         while (true) 
         {
-            var response = await GetUsersXmlAsync(nextMarker, cancellationToken);
+            var response = await GetUsersXmlAsync(nextMarker, cancellationToken).ConfigureAwait(false);
             if (response.IsFailure)
             {
                 return response.FailureOrThrow();
             }
 
             var xmlData = (response.SuccessOrThrow().Body.Content?.ToString()).OrEmpty();
-            byte[] byteArray = Encoding.UTF8.GetBytes(xmlData);
-            string cleanedXml = Encoding.UTF8.GetString(byteArray, GetBOMLength(byteArray), byteArray.Length - GetBOMLength(byteArray));
+            var byteArray = Encoding.UTF8.GetBytes(xmlData);
+
+            var cleanedXml = Encoding.UTF8.GetString(byteArray, GetBOMLength(byteArray), byteArray.Length - GetBOMLength(byteArray));
             var doc = XDocument.Parse(cleanedXml);
 
             var blobs = doc.Descendants("Blob");
             foreach (var blob in blobs)
             {
                 var metadata = blob.Element("Metadata");
-                if (metadata is not null)
+                if (metadata is null)
                 {
-                    string? dataverseUserId = null;
-                    string? azureUserId = null;
-                    foreach (var metadataItem in metadata.Elements())
+                    continue;
+                }
+
+                Guid? dataverseUserId = null;
+                Guid? azureUserId = null;
+
+                foreach (var metadataItem in metadata.Elements())
+                {
+                    var tag = metadataItem.Name.LocalName;
+
+                    if (tag.Equals(MetadataDataverseUserIdName, StringComparison.InvariantCulture))
                     {
-                        var tag = metadataItem.Name.LocalName;
-                        if (tag.Equals(MetadataDataverseUserIdName, StringComparison.InvariantCulture))
-                        {
-                            dataverseUserId = metadataItem.Value;
-                        }
-
-                        if (tag.Equals(MetadataAzureUserIdName, StringComparison.InvariantCulture))
-                        {
-                            azureUserId = metadataItem.Value;
-                        }
-
-                        if (string.IsNullOrWhiteSpace(dataverseUserId) is false && string.IsNullOrWhiteSpace(azureUserId) is false)
-                        {
-                            result.Add(new(
-                                azureUserId: Guid.Parse(azureUserId),
-                                dataverseUserId: Guid.Parse(dataverseUserId)));
-                            break;
-                        }
+                        dataverseUserId = Guid.Parse(metadataItem.Value);
                     }
+
+                    if (tag.Equals(MetadataAzureUserIdName, StringComparison.InvariantCulture))
+                    {
+                        azureUserId = Guid.Parse(metadataItem.Value);
+                    }
+
+                    if (dataverseUserId is null || azureUserId is null)
+                    {
+                        continue;
+                    }
+
+                    result.Add(
+                        item: new(
+                            azureUserId: azureUserId.Value,
+                            dataverseUserId: dataverseUserId.Value));
+
+                    break;
                 }
             }
 
@@ -69,20 +78,18 @@ partial class BlobStorageUserApi
             }
         }
 
-        return new DbUserSetGetOut()
+        return new DbUserSetGetOut
         {
-            Users = result,
+            Users = result
         };
 
         static int GetBOMLength(byte[] byteArray)
         {
-            if (byteArray.Length >= 3 &&
-                byteArray[0] == 0xEF &&
-                byteArray[1] == 0xBB &&
-                byteArray[2] == 0xBF)
+            if (byteArray.Length >= 3 && byteArray[0] is 0xEF && byteArray[1] is 0xBB && byteArray[2] is 0xBF)
             {
                 return 3;
             }
+
             return 0;
         }
     }
@@ -101,20 +108,21 @@ partial class BlobStorageUserApi
 
     private HttpSendIn BuildHttpSendGetSetIn(string? nextMarker)
     {
-        var uri = $"https://{option.AccountName}.blob.core.windows.net/{option.ContainerName}?restype=container&comp=list&include=metadata";
+        var uri = new StringBuilder(
+            $"https://{option.AccountName}.blob.core.windows.net/{option.ContainerName}?restype=container&comp=list&include=metadata");
+
         if (string.IsNullOrEmpty(nextMarker) is false)
         {
-            uri += $"&marker={nextMarker}";
+            uri.AppendFormat("&marker={0}", nextMarker);
         }
 
         return new(
             method: HttpVerb.Get,
-            requestUri: uri)
+            requestUri: uri.ToString())
         {
             Headers = BuildGetSetHeaders(nextMarker)
         };
     }
-        
 
     private FlatArray<KeyValuePair<string, string>> BuildGetSetHeaders(string? nextMarker)
     {
@@ -134,14 +142,17 @@ partial class BlobStorageUserApi
         using var hashAlgorithm = new HMACSHA256(Convert.FromBase64String(option.AccountKey));
 
         var canonicalizedHeaders = $"{DateHeaderName}:{date}\n{VersionHeaderName}:{Version}";
-        var canonicalizedResource = $"/{option.AccountName}/{option.ContainerName}\ncomp:list\ninclude:metadata\nrestype:container";
+        var canonicalizedResource = new StringBuilder($"/{option.AccountName}/{option.ContainerName}\ncomp:list\ninclude:metadata");
+
         if (string.IsNullOrEmpty(nextMarker) is false)
         {
-            canonicalizedResource = $"/{option.AccountName}/{option.ContainerName}\ncomp:list\ninclude:metadata\nmarker:{nextMarker}\nrestype:container";
+            canonicalizedResource.AppendFormat("\nmarker:{0}", nextMarker);
         }
 
-        string stringToSign = BuildStringToSign("GET", null, null, canonicalizedHeaders, canonicalizedResource);
-        byte[] signatureBytes = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(stringToSign));
+        canonicalizedResource = canonicalizedResource.Append("\nrestype:container");
+
+        var stringToSign = BuildStringToSign("GET", null, null, canonicalizedHeaders, canonicalizedResource.ToString());
+        var signatureBytes = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(stringToSign));
 
         return Convert.ToBase64String(signatureBytes);
     }

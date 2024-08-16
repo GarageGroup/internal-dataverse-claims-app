@@ -7,8 +7,6 @@ internal sealed partial class BlobStorageUserApi(IHttpApi httpApi, BlobStorageUs
 {
     private const string FileContent = "1";
 
-    private const string ContentType = "text/plain";
-
     private const string AuthorizationHeaderName = "Authorization";
 
     private const string DateHeaderName = "x-ms-date";
@@ -27,23 +25,25 @@ internal sealed partial class BlobStorageUserApi(IHttpApi httpApi, BlobStorageUs
         =>
         failure.ToStandardFailure().WithFailureCode<Unit>(default);
 
-    private static string BuildStringToSign(string verb, string? contentLength, string? contentType, string canonicalizedHeaders, string canonicalizedResource)
+    private static string BuildStringToSign(
+        string verb, string? contentLength, string? contentType, string canonicalizedHeaders, string canonicalizedResource)
         =>
-        string.Join("\n",
-        [
-            verb,                           // HTTP метод
-            string.Empty,                   // Content-Encoding
-            string.Empty,                   // Content-Language
-            contentLength ?? string.Empty,  // Content-Length
-            string.Empty,                   // Content-MD5
-            contentType ?? string.Empty,    // Content-Type
-            string.Empty,                   // Date
-            string.Empty,                   // If-Modified-Since
-            string.Empty,                   // If-Match
-            string.Empty,                   // If-None-Match
-            string.Empty,                   // If-Unmodified-Since
-            string.Empty,                   // Range
-            canonicalizedHeaders,           // CanonicalizedHeaders
-            canonicalizedResource           // CanonicalizedResource
-        ]);
+        string.Join(
+            separator: "\n",
+            value: [
+                verb,                           // HTTP метод
+                string.Empty,                   // Content-Encoding
+                string.Empty,                   // Content-Language
+                contentLength.OrEmpty(),  // Content-Length
+                string.Empty,                   // Content-MD5
+                contentType.OrEmpty(),    // Content-Type
+                string.Empty,                   // Date
+                string.Empty,                   // If-Modified-Since
+                string.Empty,                   // If-Match
+                string.Empty,                   // If-None-Match
+                string.Empty,                   // If-Unmodified-Since
+                string.Empty,                   // Range
+                canonicalizedHeaders,           // CanonicalizedHeaders
+                canonicalizedResource           // CanonicalizedResource
+            ]);
 }
