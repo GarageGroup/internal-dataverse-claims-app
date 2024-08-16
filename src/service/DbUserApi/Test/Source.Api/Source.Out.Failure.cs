@@ -5,7 +5,7 @@ using Xunit;
 
 namespace GarageGroup.Internal.Dataverse.Claims.Service.DbUserApi.Test;
 
-partial class CosmosDbUserApiSource
+partial class DbUserApiSource
 {
     public static TheoryData<HttpSendFailure, Failure<Unit>> OutputFailureTestData
         =>

@@ -43,7 +43,7 @@ partial class CosmosDbUserApiTest
     }
 
     [Theory]
-    [MemberData(nameof(CosmosDbUserApiSource.OutputFailureTestData), MemberType = typeof(CosmosDbUserApiSource))]
+    [MemberData(nameof(DbUserApiSource.OutputFailureTestData), MemberType = typeof(DbUserApiSource))]
     public static async Task GetUsersAsync_HttpApiSendResultIsFailure_ExpectedFailure(
         HttpSendFailure httpSendFailure, Failure<Unit> expected)
     {

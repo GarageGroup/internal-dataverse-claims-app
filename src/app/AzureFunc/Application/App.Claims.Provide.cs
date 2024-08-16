@@ -6,5 +6,5 @@ partial class Application
 {
     internal static Dependency<IClaimsProvideHandler> UseClaimsProvideHandler()
         =>
-        UseDbUserApi().UseClaimsProvideHandler();
+        Dependency.From(ResolveDbUserApi).UseClaimsProvideHandler();
 }

@@ -7,7 +7,7 @@ using Xunit;
 
 namespace GarageGroup.Internal.Dataverse.Claims.Service.DbUserApi.Test;
 
-partial class CosmosDbUserApiTest
+partial class BlobStorageUserApiTest
 {
     [Fact]
     public static async Task CreateUserAsync_ExpectHttpApiSendCalledOnce()
@@ -17,11 +17,12 @@ partial class CosmosDbUserApiTest
         var date = new DateTime(2024, 7, 3, 14, 41, 12);
         var mockDateProvider = BuildDateProvider(date);
 
-        var option = new CosmosDbUserApiOption(
+        var option = new BlobStorageUserApiOption(
             accountName: "AccountName",
+            containerName: "SomeContainerName",
             accountKey: "c29tZSBhY2NvdW50IGtleQ==");
 
-        var api = new CosmosDbUserApi(mockHttpApi.Object, option, mockDateProvider);
+        var api = new BlobStorageUserApi(mockHttpApi.Object, option, mockDateProvider);
 
         var input = new DbUserCreateIn(
             azureUserId: new("b76e756f-7f6e-4df0-b470-8f0c0a04d18c"),
@@ -31,22 +32,23 @@ partial class CosmosDbUserApiTest
         _ = await api.CreateUserAsync(input, cancellationToken);
 
         var expectedInput = new HttpSendIn(
-            method: HttpVerb.Post,
-            requestUri: "https://AccountName.table.cosmos.azure.com/DataverseUsers")
+            method: HttpVerb.Put,
+            requestUri: "https://AccountName.blob.core.windows.net/SomeContainerName/b76e756f-7f6e-4df0-b470-8f0c0a04d18c.txt")
         {
             Headers =
             [
-                new("authorization", "SharedKeyLite AccountName:88gZ/q3ms6VWsIaZvpgzYIXrt3lg9D7rfcGsThQoul4="),
+                new("authorization", "SharedKey AccountName:HfZXg/VDhNyqPILgV5GNXcuI7OIy1TEEgcDG8tQI6iQ="),
                 new("x-ms-date", "Wed, 03 Jul 2024 14:41:12 GMT"),
-                new("x-ms-version", "2019-02-02"),
-                new("accept", "application/json;odata=nometadata")
+                new("x-ms-version", "2022-11-02"),
+                new("x-ms-blob-type", "BlockBlob"),
+                new("x-ms-meta-azureuserid", "b76e756f-7f6e-4df0-b470-8f0c0a04d18c"),
+                new("x-ms-meta-dataverseuserid", "d0bb0ec9-6fe4-41c6-afc7-78892a24fbce")
             ],
-            Body = HttpBody.SerializeAsJson(new InnerDbUserJson
+            Body = new HttpBody()
             {
-                DataverseUserId = new("d0bb0ec9-6fe4-41c6-afc7-78892a24fbce"),
-                RowKey = new("b76e756f-7f6e-4df0-b470-8f0c0a04d18c"),
-                PartitionKey = new("b76e756f-7f6e-4df0-b470-8f0c0a04d18c")
-            }),
+                Content = new("1"),
+                Type = new("text/plain")
+            },
             SuccessType = HttpSuccessType.OnlyStatusCode
         };
 
@@ -54,14 +56,14 @@ partial class CosmosDbUserApiTest
     }
 
     [Theory]
-    [MemberData(nameof(CosmosDbUserApiSource.OutputFailureTestData), MemberType = typeof(CosmosDbUserApiSource))]
+    [MemberData(nameof(DbUserApiSource.OutputFailureTestData), MemberType = typeof(DbUserApiSource))]
     public static async Task CreateUserAsync_HttpApiSendResultIsFailure_ExpectedFailure(
         HttpSendFailure httpSendFailure, Failure<Unit> expected)
     {
         var mockHttpApi = BuildMockHttpApi(httpSendFailure);
         var mockDateProvider = BuildDateProvider(SomeDate);
 
-        var api = new CosmosDbUserApi(mockHttpApi.Object, SomeOption, mockDateProvider);
+        var api = new BlobStorageUserApi(mockHttpApi.Object, SomeOption, mockDateProvider);
         var actual = await api.CreateUserAsync(SomeCreateInput, default);
 
         Assert.Equal(expected, actual);
@@ -78,7 +80,7 @@ partial class CosmosDbUserApiTest
         var mockHttpApi = BuildMockHttpApi(httpOut);
         var mockDateProvider = BuildDateProvider(SomeDate);
 
-        var api = new CosmosDbUserApi(mockHttpApi.Object, SomeOption, mockDateProvider);
+        var api = new BlobStorageUserApi(mockHttpApi.Object, SomeOption, mockDateProvider);
         var actual = await api.CreateUserAsync(SomeCreateInput, default);
 
         Assert.StrictEqual(Result.Success<Unit>(default), actual);

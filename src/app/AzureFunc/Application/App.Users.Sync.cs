@@ -10,6 +10,6 @@ partial class Application
         Pipeline.Pipe(
             UseCrmUserApi())
         .With(
-            UseDbUserApi())
+            ResolveDbUserApi)
         .UseUsersSyncHandler();
 }
