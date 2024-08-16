@@ -5,11 +5,11 @@ using Xunit;
 
 namespace GarageGroup.Internal.Dataverse.Claims.Service.DbUserApi.Test;
 
-using TheoryData = TheoryData<BlobStorageUserApiOption, DateTime, FlatArray<HttpSendIn>, FlatArray<Result<HttpSendOut, HttpSendFailure>>>;
+using GetSetInputTheoryData = TheoryData<BlobStorageUserApiOption, DateTime, FlatArray<HttpSendIn>, FlatArray<Result<HttpSendOut, HttpSendFailure>>>;
 
 partial class DbUserApiSource
 {
-    public static TheoryData GetSetInputTestData
+    public static GetSetInputTheoryData GetSetInputTestData
         =>
         new()
         {
